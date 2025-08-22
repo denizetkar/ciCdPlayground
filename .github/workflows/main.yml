@@ -14,7 +14,7 @@ permissions:
   checks: write
   pull-requests: write
   id-token: write
-  contents: read
+  contents: write
   pages: write
 
 jobs:
@@ -26,6 +26,7 @@ jobs:
       # It is not clear which versions these are,
       # so it might be a good idea to specify them via an action like actions/setup-node@v4
       - uses: actions/checkout@v4
+
       - name: Install
         run: yarn
       - name: Unit tests
@@ -37,11 +38,9 @@ jobs:
 
       - name: Tag the working commit
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version != '' }}
-        env:
-          TAG: ${{ github.event.inputs.version }}
         run: |
-          git tag -a "${TAG}" -m "Release ${TAG}"
-          git push origin "refs/tags/${TAG}"
+          git tag ${{ inputs.version }}
+          git push origin ${{ inputs.version }}
 
       - name: Publish test results
         uses: EnricoMi/publish-unit-test-result-action@v2.20.0
