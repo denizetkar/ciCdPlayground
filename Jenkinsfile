@@ -4,6 +4,10 @@ pipeline {
         nodejs 'yarn'
     }
 
+    parameters {
+        string(name: 'DESCRIPTION', defaultValue: '', trim: true, description: 'Optional build description')
+    }
+
     stages {
         stage('install') {
             steps {
@@ -59,6 +63,11 @@ pipeline {
     post {
         always {
             junit '**/reports/**/*.xml'
+            script {
+                if (params.DESCRIPTION?.trim()) {
+                    currentBuild.description = params.DESCRIPTION
+                }
+            }
         }
     }
 }
